@@ -6,7 +6,7 @@ import io.realm.annotations.RealmClass
 import io.realm.annotations.Required
 
 @RealmClass
-class ArticleModel : RealmModel{
+open class ArticleModel : RealmModel{
     @PrimaryKey
     var id :String? = ""
 
