@@ -8,12 +8,9 @@ import io.realm.annotations.Required
 @RealmClass
 open class ArticleModel : RealmModel{
     @PrimaryKey
-    var id :String? = ""
+    var file :String? = ""
 
     @Required
-    var title: String = ""
-
-    @Required
-    var description: String? = ""
+    var data: String = ""
 
 }
