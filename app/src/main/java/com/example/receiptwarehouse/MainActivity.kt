@@ -29,7 +29,8 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
 
         binding.fab.setOnClickListener {
-            findNavController(R.id.nav_host_fragment_content_main).navigateUp()
+            navController.navigateUp()
+            navController.navigate(R.id.CameraFragment)
         }
     }
 

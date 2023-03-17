@@ -54,10 +54,6 @@ class MainPreviewFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.buttonFirst.setOnClickListener {
-            findNavController().navigate(R.id.action_MainPreviewFragment_to_CameraFragment)
-        }
     }
 
     override fun onDestroyView() {
