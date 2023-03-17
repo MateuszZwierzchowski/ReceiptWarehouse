@@ -30,7 +30,6 @@ class MainActivity : AppCompatActivity() {
 
         binding.fab.setOnClickListener { view ->
             findNavController(R.id.nav_host_fragment_content_main).navigateUp()
-
         }
     }
 
