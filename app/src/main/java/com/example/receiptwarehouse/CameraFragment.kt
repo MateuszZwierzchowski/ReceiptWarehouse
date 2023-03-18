@@ -5,9 +5,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.findNavController
 import com.example.receiptwarehouse.databinding.FragmentCameraBinding
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -15,17 +15,16 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import java.io.File
@@ -36,12 +35,16 @@ import java.util.*
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
+@Suppress("DEPRECATION")
 class CameraFragment : Fragment() {
-    var photoFile: File? = null
-    private val CAPTURE_IMAGE_REQUEST = 1
-    var mCurrentPhotoPath: String? = null
+    private var photoFile: File? = null
+    private var mCurrentPhotoPath: String? = null
+    private val captureImageRequest = 1
     private val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
     private var _binding: FragmentCameraBinding? = null
+
+    val extractedText: MutableList<MutableList<String>> = mutableListOf()
+    val lineList: MutableList<String> = mutableListOf()
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -50,7 +53,7 @@ class CameraFragment : Fragment() {
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         _binding = FragmentCameraBinding.inflate(inflater, container, false)
         return binding.root
@@ -67,6 +70,7 @@ class CameraFragment : Fragment() {
         _binding = null
     }
 
+    @SuppressLint("QueryPermissionsNeeded")
     private fun captureImage() {
 
         if (activity?.let {
@@ -90,17 +94,17 @@ class CameraFragment : Fragment() {
                 try {
                     photoFile = createImageFile()
                     // Continue only if the File was successfully created
-                    if (photoFile != null) {
-                        val photoURI = FileProvider.getUriForFile(
-                            requireActivity(),
-                            "com.example.myapplication.fileproviderx",
-                            photoFile!!
-                        )
-                        takePictureIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                        startActivityForResult(takePictureIntent, CAPTURE_IMAGE_REQUEST)
-                    }
+                    val photoURI = FileProvider.getUriForFile(
+                        requireActivity(),
+                        "com.example.myapplication.fileproviderx",
+                        photoFile!!
+                    )
+                    takePictureIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    startActivityForResult(takePictureIntent, captureImageRequest)
+
                 } catch (ex: Exception) {
                     // Error occurred while creating the File
                     activity?.let { displayMessage(it.baseContext, ex.message.toString()) }
@@ -110,10 +114,10 @@ class CameraFragment : Fragment() {
                 activity?.let { displayMessage(it.baseContext, "Null") }
             }
         }
-
     }
 
 
+    @SuppressLint("SimpleDateFormat")
     @Throws(IOException::class)
     private fun createImageFile(): File {
         // Create an image file name
@@ -147,10 +151,12 @@ class CameraFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == CAPTURE_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
+        if (requestCode == captureImageRequest && resultCode == Activity.RESULT_OK) {
             var myBitmap = BitmapFactory.decodeFile(photoFile!!.absolutePath)
             myBitmap = rotateBitmap(myBitmap, 90F)
+
             processBitmap(myBitmap)
+
             activity?.findViewById<ImageView>(R.id.imageView)?.setImageBitmap(myBitmap)
         } else {
             activity?.let { displayMessage(it.baseContext, "Request cancelled or something went wrong.") }
@@ -159,24 +165,34 @@ class CameraFragment : Fragment() {
 
     private fun processBitmap(bitmap: Bitmap) {
         val image = InputImage.fromBitmap(bitmap, 0)
-        val result = recognizer.process(image)
-            .addOnSuccessListener { visionText ->
-                for (block in visionText.textBlocks) {
-                    val boundingBox = block.boundingBox
-                    val cornerPoints = block.cornerPoints
-                    val text = block.text
+        recognizer.process(image)
+            .addOnSuccessListener {visionText ->
+                processTextBlock(visionText)
+            }
+            .addOnFailureListener {
+                activity?.let { displayMessage(it.baseContext, it.toString()) }
+            }
+    }
 
-                    for (line in block.lines) {
-                        // ...
-                        for (element in line.elements) {
-                            Log.i("TEKST", element.text)
-                        }
-                    }
+    private fun processTextBlock(result: Text) {
+        val resultText = result.text
+        for (block in result.textBlocks) {
+            val blockText = block.text
+            val blockCornerPoints = block.cornerPoints
+            val blockFrame = block.boundingBox
+            for (line in block.lines) {
+                val lineText = line.text
+                val lineCornerPoints = line.cornerPoints
+                val lineFrame = line.boundingBox
+                lineList.clear()
+                for (element in line.elements) {
+                    val elementText = element.text
+                    val elementCornerPoints = element.cornerPoints
+                    val elementFrame = element.boundingBox
+                    lineList.add(elementText)
                 }
+                extractedText.add(lineList)
             }
-            .addOnFailureListener { e ->
-                // Task failed with an exception
-                // ...
-            }
+        }
     }
 }
