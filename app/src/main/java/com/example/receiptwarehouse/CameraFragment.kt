@@ -32,9 +32,7 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
-/**
- * A simple [Fragment] subclass as the second destination in the navigation.
- */
+
 @Suppress("DEPRECATION")
 class CameraFragment : Fragment() {
     private var photoFile: File? = null
@@ -42,9 +40,6 @@ class CameraFragment : Fragment() {
     private val captureImageRequest = 1
     private val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
     private var _binding: FragmentCameraBinding? = null
-
-    val extractedText: MutableList<MutableList<String>> = mutableListOf()
-    val lineList: MutableList<String> = mutableListOf()
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -175,24 +170,32 @@ class CameraFragment : Fragment() {
     }
 
     private fun processTextBlock(result: Text) {
-        val resultText = result.text
+        //val resultText = result.text
+        val extractedText: MutableList<MutableList<MutableList<String>>> = mutableListOf()
+
+
         for (block in result.textBlocks) {
-            val blockText = block.text
-            val blockCornerPoints = block.cornerPoints
-            val blockFrame = block.boundingBox
+            val blockList: MutableList<MutableList<String>> = mutableListOf()
+            //val blockText = block.text
+            //val blockCornerPoints = block.cornerPoints
+            //val blockFrame = block.boundingBox
             for (line in block.lines) {
-                val lineText = line.text
-                val lineCornerPoints = line.cornerPoints
-                val lineFrame = line.boundingBox
-                lineList.clear()
+                val lineList: MutableList<String> = mutableListOf()
+                //val lineText = line.text
+                //val lineCornerPoints = line.cornerPoints
+                // val lineFrame = line.boundingBox
                 for (element in line.elements) {
                     val elementText = element.text
                     val elementCornerPoints = element.cornerPoints
                     val elementFrame = element.boundingBox
+
                     lineList.add(elementText)
                 }
-                extractedText.add(lineList)
+                blockList.add(lineList)
             }
+            extractedText.add(blockList)
         }
+
+        Log.i("EXTRACTED_TEXT", extractedText.toString())
     }
 }

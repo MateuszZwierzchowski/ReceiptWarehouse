@@ -17,6 +17,10 @@ class RealmApplication : Application() {
             .schemaVersion(0)
             .allowWritesOnUiThread(true)
             .allowWritesOnUiThread(true).build()
-        config.let { Realm.setDefaultConfiguration(it)}
+        config.let {
+            if (it != null) {
+                Realm.setDefaultConfiguration(it)
+            }
+        }
     }
 }

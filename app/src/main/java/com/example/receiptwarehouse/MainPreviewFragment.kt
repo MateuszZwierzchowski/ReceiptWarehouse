@@ -13,27 +13,6 @@ import com.nikialeksey.hunspell.Hunspell
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 
-fun autocorrect(input: String): String {
-    val words = input.split(" ")
-    val correctedWords = mutableListOf<String>()
-    val hunspell = Hunspell("pl_PL.aff", "pl_PL.dic")
-    for (word in words) {
-        val suggestions = hunspell.suggest(word)
-        val correctedWord = if (suggestions.isNotEmpty()) {
-            // Suggest the first suggestion
-            suggestions[0]
-        } else {
-            // No suggestions, keep the original word
-            word
-        }
-        correctedWords.add(correctedWord)
-    }
-    return correctedWords.joinToString(" ")
-}
-
-
-
-
 class MainPreviewFragment : Fragment() {
 
     private var _binding: FragmentMainPreviewBinding? = null
