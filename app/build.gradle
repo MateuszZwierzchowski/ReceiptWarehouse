@@ -1,9 +1,8 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-
     id 'kotlin-kapt'
-    id 'realm-android'
+    id 'io.realm.kotlin'
 }
 
 android {
@@ -40,7 +39,8 @@ android {
 }
 
 dependencies {
-
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
+    implementation 'io.realm.kotlin:library-base:1.6.0'
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.8.0'

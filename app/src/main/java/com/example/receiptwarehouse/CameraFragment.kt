@@ -16,8 +16,10 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.os.Environment
+import android.provider.ContactsContract.Data
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -52,11 +54,19 @@ class CameraFragment : Fragment() {
 
         _binding = FragmentCameraBinding.inflate(inflater, container, false)
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        view.findViewById<Button>(R.id.button).setOnClickListener {
+            Log.i("BUTTON", "CLICKED!")
+
+            //Database.write("alamakota", "kotmaale")
+
+            //Database.query()
+        }
+
         captureImage()
     }
 
