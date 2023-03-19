@@ -27,8 +27,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text
+import com.google.mlkit.vision.text.Text.Line
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import io.realm.kotlin.ext.realmListOf
+import io.realm.kotlin.types.RealmList
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -61,10 +64,6 @@ class CameraFragment : Fragment() {
 
         view.findViewById<Button>(R.id.button).setOnClickListener {
             Log.i("BUTTON", "CLICKED!")
-
-            //Database.write("alamakota", "kotmaale")
-
-            //Database.query()
         }
 
         captureImage()
@@ -181,16 +180,16 @@ class CameraFragment : Fragment() {
 
     private fun processTextBlock(result: Text) {
         //val resultText = result.text
-        val extractedText: MutableList<MutableList<MutableList<String>>> = mutableListOf()
+        val blocksList: RealmList<BlockItem> = realmListOf()
 
 
         for (block in result.textBlocks) {
-            val blockList: MutableList<MutableList<String>> = mutableListOf()
+            val linesList: RealmList<LineItem> = realmListOf()
             //val blockText = block.text
             //val blockCornerPoints = block.cornerPoints
             //val blockFrame = block.boundingBox
             for (line in block.lines) {
-                val lineList: MutableList<String> = mutableListOf()
+                val words: RealmList<String> = realmListOf()
                 //val lineText = line.text
                 //val lineCornerPoints = line.cornerPoints
                 // val lineFrame = line.boundingBox
@@ -198,14 +197,15 @@ class CameraFragment : Fragment() {
                     val elementText = element.text
                     val elementCornerPoints = element.cornerPoints
                     val elementFrame = element.boundingBox
-
-                    lineList.add(elementText)
+                    words.add(elementText)
                 }
-                blockList.add(lineList)
+                linesList.add(LineItem(words))
             }
-            extractedText.add(blockList)
+            blocksList.add(BlockItem(linesList))
         }
 
-        Log.i("EXTRACTED_TEXT", extractedText.toString())
+        Database.write("buhaha", blocksList)
+        Database.query()
+
     }
 }
