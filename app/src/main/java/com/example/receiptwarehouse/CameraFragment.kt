@@ -41,13 +41,11 @@ import java.util.*
 @Suppress("DEPRECATION")
 class CameraFragment : Fragment() {
     private var photoFile: File? = null
+    private var photoURL: String = ""
     private var mCurrentPhotoPath: String? = null
     private val captureImageRequest = 1
     private val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
     private var _binding: FragmentCameraBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -63,7 +61,10 @@ class CameraFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         view.findViewById<Button>(R.id.button).setOnClickListener {
-            Log.i("BUTTON", "CLICKED!")
+            val transaction = parentFragmentManager.beginTransaction()
+            (activity as MainActivity).getReciepeList()
+                ?.let { transaction.replace(R.id.nav_host_fragment_content_main, it) }
+            transaction.commit()
         }
 
         captureImage()
@@ -124,6 +125,7 @@ class CameraFragment : Fragment() {
     @SuppressLint("SimpleDateFormat")
     @Throws(IOException::class)
     private fun createImageFile(): File {
+
         // Create an image file name
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val imageFileName = "JPEG_" + timeStamp + "_"
@@ -136,6 +138,8 @@ class CameraFragment : Fragment() {
 
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.absolutePath
+        this.photoURL = image.absolutePath
+
         return image
     }
 
@@ -182,7 +186,6 @@ class CameraFragment : Fragment() {
         //val resultText = result.text
         val blocksList: RealmList<BlockItem> = realmListOf()
 
-
         for (block in result.textBlocks) {
             val linesList: RealmList<LineItem> = realmListOf()
             //val blockText = block.text
@@ -204,8 +207,8 @@ class CameraFragment : Fragment() {
             blocksList.add(BlockItem(linesList))
         }
 
-        Database.write("buhaha", blocksList)
-        Database.query()
+        Database.write("buhaha", blocksList, photoURL)
+        //Database.query()
 
     }
 }

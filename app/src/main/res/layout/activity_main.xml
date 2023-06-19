@@ -9,53 +9,6 @@
 
     <include layout="@layout/content_main" />
 
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:layout_width="match_parent"
-        android:layout_height="130dp"
-        android:orientation="vertical"
-        android:background="@drawable/main_toolbar">
-        <TextView
-            android:layout_marginTop="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:text="Receipt Warehouse"
-            android:textSize="30sp"
-            android:textColor="@color/white"
-            android:textAlignment="center">
-        </TextView>
-
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:orientation="horizontal">
-
-
-            <SearchView
-                android:layout_width="270dp"
-                android:layout_height="match_parent"
-                android:queryHint="Search"
-                android:iconifiedByDefault="false"
-                android:background="@drawable/search_background"
-                android:layout_margin="15dp"
-                ></SearchView>
-
-            <Button
-                android:id="@+id/fab_filters"
-                android:layout_width="95dp"
-                android:layout_height="50dp"
-                android:text="Filters"
-                android:textColor="@color/white"
-                android:layout_marginTop="15dp"
-                android:backgroundTint="?colorAccent"
-                >
-            </Button>
-
-
-
-
-        </androidx.appcompat.widget.LinearLayoutCompat>
-
-    </androidx.appcompat.widget.LinearLayoutCompat>
 
     <ImageButton
         android:id="@+id/fab_add"
@@ -67,5 +20,4 @@
         android:background="@drawable/ripple_oval"
         android:elevation="8dp"
         android:src="@drawable/ic_plus_70dp" />
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

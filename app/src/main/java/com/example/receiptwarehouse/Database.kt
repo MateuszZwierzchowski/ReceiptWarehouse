@@ -17,14 +17,13 @@ class ExtractedItem() : RealmObject {
     var _id: ObjectId = ObjectId.create()
     var filename: String = ""
     var blocks: RealmList<BlockItem> = realmListOf()
-
-    constructor(f: String, b: RealmList<BlockItem>) : this() {
+    var imageUrl: String = ""
+    constructor(f: String, b: RealmList<BlockItem>, im: String) : this() {
         filename = f
         blocks = b
+        imageUrl = im
     }
 }
-
-
 class BlockItem() : RealmObject {
     @PrimaryKey
     var _id: ObjectId = ObjectId.create()
@@ -34,8 +33,6 @@ class BlockItem() : RealmObject {
         lines = l
     }
 }
-
-
 class LineItem() : RealmObject {
     @PrimaryKey
     var _id: ObjectId = ObjectId.create()
@@ -50,17 +47,40 @@ object Database {
     private val config = RealmConfiguration.create(schema = setOf(ExtractedItem::class, BlockItem::class, LineItem::class))
     private val realm: Realm = Realm.open(config)
 
-    fun write(f: String, b: RealmList<BlockItem>) {
-        val extractedItem = ExtractedItem(f, b)
+    fun write(f: String, b: RealmList<BlockItem>, im: String) {
+        val extractedItem = ExtractedItem(f, b, im)
         realm.writeBlocking {
             copyToRealm(extractedItem)
         }
     }
 
-    fun query() {
+    fun getAll(): ArrayList<ReceiptDataClass> {
         val all: RealmResults<ExtractedItem> = realm.query<ExtractedItem>().find()
+        val paths = all.map { it.imageUrl }
+        val blocksList = all.map { it.blocks }
 
-        Log.i("FOUND", all.get(1).blocks.get(0).lines.get(0).words.toString())
+        val texts = mutableListOf<String>()
+
+        for (blocks in blocksList) {
+            var text = ""
+            for (block in blocks) {
+                for (line in block.lines) {
+                    for (word in line.words) {
+                        text += word + "\n"
+                    }
+                }
+            }
+            texts.add(text)
+        }
+
+        val ret: ArrayList<ReceiptDataClass> = ArrayList()
+
+        for (i in 0 until all.size) {
+            val temp = ReceiptDataClass(paths[i], texts[i])
+            ret.add(temp)
+        }
+
+        return ret
     }
 
 }

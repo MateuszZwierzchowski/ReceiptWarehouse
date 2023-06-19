@@ -1,8 +1,51 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:background="@color/white"
+tools:context=".MainPreviewFragment">
+
+<androidx.appcompat.widget.LinearLayoutCompat
+    android:id="@+id/linearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="130dp"
+    android:orientation="vertical"
+    android:background="@drawable/main_toolbar">
+
+    <TextView
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="Receipt Warehouse"
+        android:textSize="30sp"
+        android:textColor="@color/black"
+        android:textAlignment="center">
+    </TextView>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:orientation="horizontal">
+
+        <SearchView
+            android:id="@+id/searchViewXYZ"
+            android:layout_width="270dp"
+            android:layout_height="match_parent"
+            android:queryHint="Search"
+            android:iconifiedByDefault="false"
+            android:background="@drawable/search_background"
+            android:layout_margin="15dp" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.appcompat.widget.LinearLayoutCompat>
+
+<androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/recyclerView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainPreviewFragment">
-</androidx.constraintlayout.widget.ConstraintLayout>
+    android:layout_below="@id/linearLayout"
+    tools:itemCount="5"
+    tools:listitem="@layout/item_layout" />
+
+</RelativeLayout>
